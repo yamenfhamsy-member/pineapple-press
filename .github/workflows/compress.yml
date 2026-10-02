@@ -37,9 +37,13 @@ jobs:
           AUDIO_URL: ${{ inputs.audio_url }}
           EXT: ${{ inputs.ext }}
 
+      - name: Install static ffmpeg
+        run: pip install imageio-ffmpeg
+
       - name: Compress to Opus 64k stereo
         run: |
-          ffmpeg -y -hide_banner -loglevel error \
+          FF=$(python -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())")
+          "$FF" -y -hide_banner -loglevel error \
             -i "in/input.${{ inputs.ext }}" -vn \
             -c:a libopus -b:a 64k -vbr on -compression_level 10 \
             -ar 48000 "out/result.opus"
